@@ -34,7 +34,7 @@ class Bill():
 
   def result(self):
     ## update and return the "passed" variable to indicate True/False if the bill passed
-    if len(self.votes["yes"] > lne(self.votes["no"])):
+    if len(self.votes["yes"] > len(self.votes["no"])):
       self.passed = True
     else:
       self.passed = False
