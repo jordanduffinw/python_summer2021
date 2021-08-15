@@ -25,52 +25,78 @@
 # BONUS: using inheritance, show how it would be easy to add a third type of
 # investments -- Bonds -- to the mix.
 
+### Step 0: Import packages we need
+import random
+
 ### Step 1: Creating the "Portfolio" class
 class Portfolio:
 	def __init__ (self, Cash = 0, Stocks = 0, MFs = 0):
+		self.log = []		# Creates a log of transactions
 		self.Cash = Cash	# Start with no cash, obviously
 		self.Stocks = {}	# These are _our_ stocks (we start with none)
 		self.MFs = {}		# These are _our_ mutual funds (we start with none)
 		self.s = {} 		# Initialize an empty dictionary to keep track of possible stocks
 		self.MF = {}		# Initialize an empty dictionary to keep track of possible mutual funds
-
+        
 	def __str__ (self):
 		return 'Cash: ${}'.format(self.Cash) + '\nStocks: {}'.format(self.Stocks) + '\nMFs: {}'.format(self.MFs)
 
+	def history(self):
+		print(*self.log, sep = "\n")
+        
 ### Step 2: creating the functions to add and withdraw cash
 	def addCash(self, added):
 		self.Cash = portfolio.Cash + added		# Just adds the value to the existing portfolio.
+		ledger = "Added ${} cash".format(added)
+		self.log.append(ledger)
 	def withdrawCash(self, withdrew):
 		self.Cash = portfolio.Cash - withdrew	# Same as adding, but subtraction.
+		ledger = "Withdrew ${} cash".format(withdrew)
+		self.log.append(ledger)
+        
 
 ### Step 3: creating the function to generate new stock
 	def Stock(self, value, symbol):
 		self.s[symbol] = value
+		ledger = "Created the {} stock valued at  ${}.".format(symbol, value)
+		self.log.append(ledger)
 
 ### Step 4: creating the functions to buy and sell stock.
 	def buyStock(self, quantity, symbol):
 		self.Stocks[symbol] = self.Stocks.get(symbol, 0) + quantity			# Increases the number of stocks
 		self.Cash = portfolio.Cash - (quantity * portfolio.s.get(symbol))	# Deducts cash as appropriate
+		ledger = "Bought {} of {}.".format(quantity, symbol)
+		self.log.append(ledger)
 	def sellStock(self, symbol, quantity): 									# Reverse of buying stocks
 		self.Stocks[symbol] = self.Stocks.get(symbol, 0) - quantity
-		self.Cash = portfolio.Cash + (quantity * portfolio.s.get(symbol))	# Sell price is a random variable drawn from Unif(0.5, 1.5)
+		self.Cash = portfolio.Cash + (quantity * portfolio.s.get(symbol) * random.uniform(0.5, 1.5))	# Sell price is a random variable drawn from Unif(0.5, 1.5)
+		ledger = "Sold {} of {}.".format(quantity, symbol)
+		self.log.append(ledger)
 
 ### Step 5: creating the function to create mutual funds
 # This is mostly the same as buying and selling stocks
 	def MutualFund(self, symbol, index = 1):
 		self.MF[symbol] = index		# Values of buying mutual funds are given as $1 per share
+		ledger = "Created the {} mutual fund.".format(index)
+		self.log.append(ledger)
 
 ### Step 6: creating the function to buy and sell mutual funds
 	def buyMutualFund(self, quantity, symbol):
 		self.MFs[symbol] = self.MFs.get(symbol, 0) + quantity
 		self.Cash = portfolio.Cash - quantity
+		ledger = "Bought {} of {}.".format(quantity, symbol)
+		self.log.append(ledger)
 
 
 	def sellMutualFund(self, symbol, quantity):
 		self.MFs[symbol] = self.MFs.get(symbol, 0) - quantity
-		self.Cash = portfolio.Cash + quantity	# Sell price is a random variable drawn from Unif(0.9, 1.2)
+		self.Cash = portfolio.Cash + quantity * random.uniform(0.9, 1.2)	# Sell price is a random variable drawn from Unif(0.9, 1.2)
+		ledger = "Sold {} of {}.".format(symbol, quantity)
+		self.log.append(ledger)
 
-
+### Step 7: View the transaction history
+### For formatting error reasons, this is coded earlier in the document.
+		
 
 ### Execution (does this code work?):
 print("""Part 1: Testing whether the code works.
@@ -107,4 +133,16 @@ print("Now we have", portfolio.MFs.get("BRT"), "shares in BRT and",
 print("Let's take a look at what we have in the portfolio now.")
 print(portfolio)
 
+# Selling mutual funds and stocks.
+print("""Let's sell some of our assets.\n*sells 3 mutual funds*\n*sells 1 HFH*\n""")
+portfolio.sellMutualFund("BRT", 3)
+portfolio.sellStock("HFH", 1)
+
+# Withdrawing some cash.
+print("""Let's withdraw $50.00.\n*withdraws $50.00*\n""")
+portfolio.withdrawCash(50.00)
+
+# Finally, let's look at all of our transactions.
+print("Here's everything we've done:")
+portfolio.history()
 
