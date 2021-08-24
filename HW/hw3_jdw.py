@@ -132,21 +132,26 @@ most_active_celeb_tweets = celebs[max(celebs, key=celebs.get)]
 ### Part 3: Followers of Washu Followers
 washu_followers_squared = []
 
+# This doesn't work if you try to get a user with protected accounts/tweets.
+
 for i in washu.followers_ids():
-    follower = api.get_user(i)
-    print(follower.name)
-    print("@{}".format(follower.screen_name))
-    print(follower.id)
-    print("{} is followed by:".format(follower.name))
-    for j in follower.followers_ids():
-        follower_squared = api.get_user(j)
-        #print(follower_squared.name)
-        print("@{}".format(follower_squared.screen_name))
-        #print(follower_squared.id)
+    try:
+        follower = api.get_user(i)
+        print(follower.name)
+        print("@{}".format(follower.screen_name))
+        print(follower.id)
+        print("{} is followed by:".format(follower.name))
+        for j in follower.followers_ids():
+            follower_squared = api.get_user(j)
+            #print(follower_squared.name)
+            print("@{}".format(follower_squared.screen_name))
+            #print(follower_squared.id)
+            print()
+            washu_followers_squared.append(follower_squared)
         print()
-        washu_followers_squared.append(follower_squared)
-    print()
-    time.sleep(random.uniform(1,3))
+        time.sleep(random.uniform(1,3))
+    except tweepy.TweepError:
+        print("Failed to run the command on that user, Skipping...")
 
 # This is basically the same as part 1
 followers_squared_active = {}
