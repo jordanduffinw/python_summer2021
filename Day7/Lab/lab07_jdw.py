@@ -112,23 +112,35 @@ for town in session.query(Town).order_by(Town.id):
   print(town.id, town.name, town.population)
 
 
+print()
+
+
 
 # TODO: 
 # 1. Display, by department, the cities having
 #    more than 50,000 inhabitants.
+for town in session.query(Town).join(Department).filter(Town.population > 50000):
+    print(town.name, town.population)
 
+print()
 
 # 2. Display the towns with the minimum population in each region
 # print town name, population, region name
 # Hint: subqueries
+from sqlalchemy import func
+sub = session.query(func.min(Town.population).label('min')).join(Department).join(Region).group_by(Region.name).subquery()
 
+for town in session.query(Town).join(Department).join(Region).filter(sub.c.min == Town.population):
+    print(town.name, town.population, town.department.region.name)
+
+print()
 
 # 3. Display the total number of inhabitants
 #    per department using only a query (no lists!)
+sub2 = session.query(Department.deptname, func.sum(Town.population).label('sum')).join(Department).group_by(Department).order_by('sum')
 
-  
-
-
+for d in sub2:
+    print(d.deptname, d.sum)
 
 
 # Copyright (c) 2014 Matt Dickenson
