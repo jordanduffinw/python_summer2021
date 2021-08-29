@@ -44,29 +44,34 @@ print(sum([len(ring[node]) for node in ring.keys()])/2)
 # 4 - 5 - 6
 # |   |   |
 # 7 - 8 - 9
+import math
 
 n = 9
 graph = {}
 
 for i in range(1, n):
-    if i % math.sqrt(n) == 0:
-        continue
-    makeLink(graph, i, i+1)
+    width = math.sqrt(n)
+    if i % width == 0:
+        pass
+    else:
+        makeLink(graph, i, i+1)
     
-    if i + math.sqrt(n) > n:
+    if i + width > n:
         continue
     
     else:
-        makeLink(g)
+        makeLink(graph, i, math.sqrt(n)+i)
+
+print(graph)
 
 ## TODO: define a function countEdges
 
 # You may want to use the module math
-import math 
-def countEdges():
+def countEdges(g):
+    return sum([len(g[node]) for node in g.keys()])/2
 
-    
-
+print(countEdges(graph))  
+print(graph.keys())
 
 
 ##  Social Network
@@ -141,16 +146,47 @@ movies[kb].keys() ## found meryl streep!
 ##   print path
 
 
+def findAllPaths(graph, start, end, path=[]):
+  # master list of lists: 
+  all_paths = []
+  path = path + [start]
+  # base case
+  if start == end:
+    return [path]
+  if start not in graph:
+    return None
+  for node in graph[start]:
+      ## check if it is already in path
+      if node not in path:
+          all_paths.extend(findAllPaths(graph, node, end, path)) # move on to the next node here
+  # print(all_paths)
+  return all_paths
 
+print(findAllPaths(movies, jr, ms))
 
-
+x = findAllPaths(movies, jr, ms)
 
 ## TODO: implement findShortestPath() to print shorest path between actors
 ## print findShortestPath(movies, ms, ss)
+def findShortestPath(graph, start, end):
+    #path_set = findAllPaths(graph, start, end)
+    #lengths = {}
+    #for i in len(path_set):
+    #    lengths[path_set[i]] = len(path_set[i])
+    return min(findAllPaths(graph, start, end), key = len)
 
+findShortestPath(movies, jr, ms)
 
-
-
+def findAllShortestPath(graph, start, end):
+    min_l = len(findShortestPath(graph, start, end))
+    paths = []
+    allPaths = findAllPaths(graph, start, end)
+    for i in range(len(allPaths)):
+        if len(allPaths[i]) == min_l:
+            paths.append(allPaths[i])
+    return paths
+        
+findAllShortestPath(movies, jr, ms)
 
 
 # Copyright (c) 2014 Matt Dickenson
